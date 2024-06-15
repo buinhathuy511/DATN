@@ -17,10 +17,11 @@ interface CommentsProps {
   commentCount: number;
   onDeleteComment: () => void;
   onAddComment: () => void;
+  authorId: string;
 }
 
 export const Comments: FC<CommentsProps> = React.memo(
-  ({ postId, onDeleteComment, onAddComment, commentCount }) => {
+  ({ postId, onDeleteComment, onAddComment, commentCount, authorId }) => {
     const [comments, setComments] = useState<commentType[]>([]);
     const [limit, setLimit] = useState<number>(2);
     const [isLoadingComment, setIsLoadingComment] = useState<boolean>(false);
@@ -82,6 +83,7 @@ export const Comments: FC<CommentsProps> = React.memo(
               onSubmit={handleChangeComment}
               onDeleteComment={deleteCommentHandler}
               key={comment._id}
+              authorId={authorId}
             />
           ))}
         {!isLoadingComment && comments.length === 0 && <p className="no-comment">No comments</p>}

@@ -270,7 +270,7 @@ export async function createCommentHandler(req, res) {
 
     let fullNotification = null;
 
-    if (req.body.userComment !== existingPost.userPost.id) {
+    if (req.body.userComment !== existingPost.userPost.toString()) {
       const newNotification = new Notification({
         type: "comment",
         content: "commented on your post",
@@ -345,11 +345,18 @@ export async function getCommentsHandler(req, res) {
 
 export async function deleteCommentHandler(req, res) {
   try {
-    const existingComment = await Comment.findById(req.params.commentId);
+    const existingComment = await Comment.findById(
+      req.params.commentId
+    ).populate("postId");
+    console.log("existingComment", existingComment);
     if (!existingComment) {
       return errorController.errorHandler(res, "Comment not found", 404);
     }
-    if (existingComment.userComment.toString() !== req.user.id) {
+    const isPostAuthor =
+      existingComment.postId?.userPost?.toString() === req.user.id;
+    const isCommentAuthor =
+      existingComment.userComment.toString() === req.user.id;
+    if (!isPostAuthor && !isCommentAuthor) {
       return errorController.errorHandler(
         res,
         "You are not allowed to delete this comment",

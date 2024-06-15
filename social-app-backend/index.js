@@ -26,8 +26,7 @@ const httpServer = createServer(app);
 //middleware
 app.use(
   cors({
-    origin:
-      ['http://localhost:3000']
+    origin: ["http://localhost:3000"],
   })
 );
 app.use(morgan("short"));
@@ -72,10 +71,7 @@ httpServer.listen(PORT, (e) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin:
-      process.env.MODE === "dev"
-        ? ["http://localhost:3000"]
-        : [""],
+    origin: process.env.MODE === "dev" ? ["http://localhost:3000"] : [""],
   },
 });
 
@@ -157,10 +153,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-notification", (notification) => {
+    if (!notification) return;
     notification.to.forEach((user) => {
-      const socketId = getSocketId(user._id);
-      if (socketId) {
-        io.to(socketId).emit("get-notification", notification);
+      if (user._id !== notification.from._id) {
+        const socketId = getSocketId(user._id);
+        if (socketId) {
+          io.to(socketId).emit("get-notification", notification);
+        }
       }
     });
   });

@@ -18,9 +18,10 @@ interface CommentProps {
   comment: commentType;
   onSubmit: (id: string, data: { content: string }) => void;
   onDeleteComment: (id: string) => Promise<void>;
+  authorId: string;
 }
 
-const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment }) => {
+const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment, authorId }) => {
   const idCurrentUser = useAppSelector(selectCurrentUser)?._id;
   const isDarkMode = useAppSelector(selectTheme);
   const [isShowCommentPopup, setIsShowCommentPopup] = useState<boolean>(false);
@@ -29,6 +30,10 @@ const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment }) => {
   const [isOpenPopUp, setIsOpenPopUp] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isBlurComment, setIsBlurComment] = useState(comment.sentiment === 'negative');
+  const isPostAuthor = authorId === idCurrentUser;
+  const isCommentAuthor = idCurrentUser === comment.userComment._id;
+
+  console.log({ authorId });
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(e.target.value);
@@ -78,7 +83,7 @@ const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment }) => {
             </div>
             <p className="comment-text">{comment.content}</p>
           </div>
-          {idCurrentUser === comment.userComment._id && (
+          {(isPostAuthor || isCommentAuthor) && (
             <button
               className="comment-button"
               onClick={() => setIsShowCommentPopup((prev) => !prev)}
@@ -86,11 +91,18 @@ const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment }) => {
               <BsThreeDots />
               {isShowCommentPopup && (
                 <div className="comment-popup">
-                  <div className="comment-popup-item" onClick={() => setIsShowCommentEdit(true)}>
-                    <FiEdit2 />
-                    <span>Edit Comment</span>
-                  </div>
-                  <hr />
+                  {isCommentAuthor && (
+                    <>
+                      <div
+                        className="comment-popup-item"
+                        onClick={() => setIsShowCommentEdit(true)}
+                      >
+                        <FiEdit2 />
+                        <span>Edit Comment</span>
+                      </div>
+                      <hr />
+                    </>
+                  )}
                   <div className="comment-popup-item" onClick={() => setIsOpenPopUp(true)}>
                     <MdDeleteOutline />
                     <span>Delete Comment</span>

@@ -222,6 +222,7 @@ const Post: FC<PostProps> = ({ post, setPosts }) => {
             onDeleteComment={onDeleteComment}
             onAddComment={onAddComment}
             commentCount={commentCount}
+            authorId={post.userPost._id}
           />
         )}
       </Paper>
