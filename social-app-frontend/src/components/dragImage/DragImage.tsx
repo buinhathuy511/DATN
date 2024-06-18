@@ -1,4 +1,5 @@
 import CloudIcon from '@mui/icons-material/Cloud';
+import ClearIcon from '@mui/icons-material/Clear';
 import React, { FC } from 'react';
 import './dragImage.scss';
 import { Player } from 'react-tuby';
@@ -7,9 +8,10 @@ import 'react-tuby/css/main.css';
 interface DragImageProps {
   changFilesHandler: (files: any[]) => void;
   filesPreview: any[];
+  onDeletePreview: (index: number) => void;
 }
 
-const DragImage: FC<DragImageProps> = ({ changFilesHandler, filesPreview }) => {
+const DragImage: FC<DragImageProps> = ({ changFilesHandler, filesPreview, onDeletePreview }) => {
   const [onDrag, setOnDrag] = React.useState<boolean>(false);
   const handleDragOver = (e: any) => {
     e.preventDefault();
@@ -54,31 +56,81 @@ const DragImage: FC<DragImageProps> = ({ changFilesHandler, filesPreview }) => {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {filesPreview &&
-        filesPreview.length > 0 &&
-        (filesPreview[0].media_type === 'image' ? (
-          <img src={filesPreview[0].url} alt="" />
-        ) : (
-          <Player
-            src={filesPreview[0].url}
-            dimensions={{ width: '100%', height: '100%' }}
-            keyboardShortcut={false}
+      {filesPreview && filesPreview.length > 0 && (
+        <div
+          className="preview-wrapper"
+          style={{
+            width: '100%',
+            minHeight: 'inherit',
+          }}
+        >
+          {filesPreview[0].media_type === 'image' ? (
+            <img src={filesPreview[0].url} alt="" />
+          ) : (
+            <Player
+              src={filesPreview[0].url}
+              dimensions={{ width: '100%', height: '100%' }}
+              keyboardShortcut={false}
+            >
+              {(ref, props) => <video ref={ref} {...props} autoPlay />}
+            </Player>
+          )}
+          <button
+            type="button"
+            className="delete-icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeletePreview(0);
+            }}
           >
-            {(ref, props) => <video ref={ref} {...props} autoPlay />}
-          </Player>
-        ))}
-      {filesPreview && filesPreview.length > 1 && (
-        <span className="img-count-more">+ {filesPreview.length - 1}</span>
+            <ClearIcon />
+          </button>
+        </div>
       )}
-
-      <div className="drag-icon">
-        <CloudIcon sx={{ width: 100, height: 100 }} htmlColor="#be185d" />
+      <div className="more-assets">
+        {filesPreview &&
+          filesPreview.length > 1 &&
+          filesPreview.slice(1).map((a, index) => (
+            <div key={a.url} className="preview-wrapper">
+              {a.media_type === 'image' ? (
+                <img src={a.url} alt="" />
+              ) : (
+                <Player
+                  src={a.url}
+                  dimensions={{ width: 150, height: 150 }}
+                  keyboardShortcut={false}
+                >
+                  {(ref, props) => <video ref={ref} {...props} autoPlay />}
+                </Player>
+              )}
+              <button
+                type="button"
+                className="delete-icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeletePreview(index + 1);
+                }}
+              >
+                <ClearIcon />
+              </button>
+            </div>
+          ))}
       </div>
-      <div className="drag-text">{onDrag ? 'Drop file here' : 'Drag Or Drop File to Upload'}</div>
-      <span>OR</span>
-      <button type="button" onClick={handleButtonClick}>
-        Browse File
-      </button>
+
+      {filesPreview?.length === 0 && (
+        <>
+          <div className="drag-icon">
+            <CloudIcon sx={{ width: 100, height: 100 }} htmlColor="#be185d" />
+          </div>
+          <div className="drag-text">
+            {onDrag ? 'Drop file here' : 'Drag Or Drop File to Upload'}
+          </div>
+          <span>OR</span>
+          <button type="button" onClick={handleButtonClick}>
+            Browse File
+          </button>
+        </>
+      )}
       <input type="file" hidden multiple onChange={handleInputChange} />
     </div>
   );

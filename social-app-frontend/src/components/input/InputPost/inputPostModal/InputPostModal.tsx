@@ -198,6 +198,13 @@ const InputPostModal: FC<InputPostModalProps> = ({ setIsShowPostModal, setPosts 
   };
 
   const showDragAndDrop = () => {
+    if (assetsData.length > 0) {
+      const inputElement: HTMLInputElement = document.querySelector(
+        ".drag-area input[type='file']"
+      ) as HTMLInputElement;
+      inputElement.click();
+      return;
+    }
     setIsShowDragAndDrop((prev) => !prev);
   };
 
@@ -237,6 +244,11 @@ const InputPostModal: FC<InputPostModalProps> = ({ setIsShowPostModal, setPosts 
     setIsShowModalSelectAudience(false);
   };
 
+  const handleDeleteAsset = (index:number) => {
+    setFilesPreview((prev) => prev.filter((_, i) => i !== index))
+    setAssetsData((prev) => prev.filter((_, i) => i!== index))
+  }
+
   return (
     <>
       <form className={`form-post-modal ${isDarkMode ? 'dark' : ''}`} onSubmit={submitHandler}>
@@ -275,7 +287,7 @@ const InputPostModal: FC<InputPostModalProps> = ({ setIsShowPostModal, setPosts 
           </div>
           {isShowDragAndDrop && (
             <div className="drag-drop-container">
-              <DragImage changFilesHandler={changFilesHandler} filesPreview={filesPreview} />
+              <DragImage changFilesHandler={changFilesHandler} filesPreview={filesPreview} onDeletePreview={handleDeleteAsset}/>
             </div>
           )}
 
@@ -326,7 +338,7 @@ const InputPostModal: FC<InputPostModalProps> = ({ setIsShowPostModal, setPosts 
               </div>
             </div>
           </div>
-          <button type="submit" disabled={postContent.length === 0} className="form-post-submit">
+          <button type="submit" disabled={postContent.length === 0 && assetsData.length === 0} className="form-post-submit">
             Post
           </button>
         </div>

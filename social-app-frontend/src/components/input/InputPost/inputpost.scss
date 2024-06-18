@@ -152,6 +152,7 @@
     .emoji-picker {
       position: relative;
       text-align: right;
+      z-index: 99999;
     }
     .form-post-assets {
       margin-top: 10px;

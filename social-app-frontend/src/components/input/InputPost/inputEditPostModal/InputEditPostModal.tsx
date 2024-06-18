@@ -74,6 +74,13 @@ const InputEditPostModal: FC<InputEditPostModalProps> = ({
   };
 
   const showDragAndDrop = () => {
+    if (assetsData.length > 0) {
+      const inputElement: HTMLInputElement = document.querySelector(
+        ".drag-area input[type='file']"
+      ) as HTMLInputElement;
+      inputElement.click();
+      return;
+    }
     setIsShowDragAndDrop((prev) => !prev);
   };
 
@@ -87,7 +94,7 @@ const InputEditPostModal: FC<InputEditPostModalProps> = ({
           const media_type = file.type.split('/')[0];
           const url = reader.result;
           setAssetsData((prev) => [...prev, { media_type, url }]);
-          setFilesPreview((prev) => [...prev, reader.result]);
+          setFilesPreview((prev) => [...prev, { media_type, url: reader.result }]);
         };
       }
     }
@@ -96,6 +103,11 @@ const InputEditPostModal: FC<InputEditPostModalProps> = ({
   const handleCloseSearchTagPeople = () => {
     setIsShowSearchTagPeople(false);
   };
+
+  const handleDeleteAsset = (index:number) => {
+    setFilesPreview((prev) => prev.filter((_, i) => i !== index))
+    setAssetsData((prev) => prev.filter((_, i) => i!== index))
+  }
 
   return (
     <>
@@ -127,7 +139,7 @@ const InputEditPostModal: FC<InputEditPostModalProps> = ({
           </div>
           {isShowDragAndDrop && (
             <div className="drag-drop-container">
-              <DragImage changFilesHandler={changFilesHandler} filesPreview={filesPreview} />
+              <DragImage changFilesHandler={changFilesHandler} filesPreview={filesPreview} onDeletePreview={handleDeleteAsset}/>
             </div>
           )}
 

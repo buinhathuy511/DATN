@@ -15,10 +15,12 @@ export async function createPostHandler(req, res) {
         403
       );
     }
-    const { result } = await getPrediction(req.body.content);
+    if (req.body.content && req.body.content !== "") {
+      const { result } = await getPrediction(req.body.content);
 
-    if (result) {
-      req.body.sentiment = result;
+      if (result) {
+        req.body.sentiment = result;
+      }
     }
     //Day len cloudinary
     if (req.body.assets) {

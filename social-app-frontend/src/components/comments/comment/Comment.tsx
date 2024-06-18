@@ -1,4 +1,4 @@
-import { Avatar } from '@mui/material';
+import { Avatar, Tooltip } from '@mui/material';
 import Backdrop from 'components/backdrop/Backdrop';
 import PopUp from 'components/popup/PopUp';
 import moment from 'moment';
@@ -11,6 +11,7 @@ import { commentType } from 'shared/types';
 import { useAppSelector } from 'store/hooks';
 import { selectTheme } from 'store/slice/themeSlice';
 import { selectCurrentUser } from 'store/slice/userSlice';
+import StarIcon from '@mui/icons-material/Star';
 
 import './comment.scss';
 
@@ -32,8 +33,7 @@ const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment, authorI
   const [isBlurComment, setIsBlurComment] = useState(comment.sentiment === 'negative');
   const isPostAuthor = authorId === idCurrentUser;
   const isCommentAuthor = idCurrentUser === comment.userComment._id;
-
-  console.log({ authorId });
+  const isPositiveComment = comment.sentiment === 'positive';
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(e.target.value);
@@ -80,6 +80,11 @@ const Comment: FC<CommentProps> = ({ comment, onSubmit, onDeleteComment, authorI
             <div className="comment-content-user-and-time">
               <p className="comment-user">{comment.userComment.fullName}</p>
               <span>{moment(comment.createdAt).fromNow()}</span>
+              {isPositiveComment && (
+                <Tooltip title="This is a positive comment">
+                  <StarIcon fontSize="small" style={{ color: '#ffd100' }} />
+                </Tooltip>
+              )}
             </div>
             <p className="comment-text">{comment.content}</p>
           </div>

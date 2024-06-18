@@ -20,7 +20,7 @@ const postSchema = mongoose.Schema(
     ],
     content: {
       type: String,
-      required: true,
+      default: "",
     },
     tagsPeople: [
       { type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] },
